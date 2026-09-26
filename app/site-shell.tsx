@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-html-link-for-pages */
 export const SUPPORT_EMAIL = "h2so4.apps@gmail.com";
-export const X_URL = "https://x.com/h2so4_apps";
+export const X_URL = "https://x.com/H2SO4_apps";
 
 export function SiteShell({ children }: Readonly<{ children: React.ReactNode }>) {
   return (

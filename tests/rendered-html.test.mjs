@@ -54,7 +54,7 @@ test("home page includes app, support, privacy, advertising, and X routes", asyn
     "/privacy/kumocalc",
     "/privacy/furumane",
     "/advertising",
-    "https://x.com/h2so4_apps",
+    "https://x.com/H2SO4_apps",
   ]) {
     assert.match(html, new RegExp(href.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
   }
