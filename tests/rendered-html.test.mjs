@@ -1,43 +1,20 @@
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import test from "node:test";
 
-const workerUrl = new URL("../dist/server/index.js", import.meta.url);
-workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}`);
-const { default: worker } = await import(workerUrl.href);
-
-async function render(pathname) {
-  return worker.fetch(
-    new Request(`http://localhost${pathname}`, {
-      headers: { accept: "text/html" },
-    }),
-    {
-      ASSETS: {
-        fetch: async () => new Response("Not found", { status: 404 }),
-      },
-    },
-    {
-      waitUntil() {},
-      passThroughOnException() {},
-    },
-  );
-}
-
 const pages = [
-  ["/", /小さな便利を/],
-  ["/apps/kumocalc", /雲電卓/],
-  ["/apps/furumane", /ふるマネ/],
-  ["/support", /h2so4\.apps@gmail\.com/],
-  ["/privacy/kumocalc", /雲電卓.*プライバシーポリシー/s],
-  ["/privacy/furumane", /ふるマネ.*プライバシーポリシー/s],
-  ["/advertising", /広告・アフィリエイトについて/],
+  ["index.html", /小さな便利を/],
+  ["apps/kumocalc/index.html", /雲電卓/],
+  ["apps/furumane/index.html", /ふるマネ/],
+  ["support/index.html", /h2so4\.apps@gmail\.com/],
+  ["privacy/kumocalc/index.html", /雲電卓.*プライバシーポリシー/s],
+  ["privacy/furumane/index.html", /ふるマネ.*プライバシーポリシー/s],
+  ["advertising/index.html", /広告・アフィリエイトについて/],
 ];
 
-for (const [pathname, expected] of pages) {
-  test(`server-renders ${pathname}`, async () => {
-    const response = await render(pathname);
-    assert.equal(response.status, 200);
-    assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
-    const html = await response.text();
+for (const [path, expected] of pages) {
+  test(`static export contains ${path}`, async () => {
+    const html = await readFile(new URL(`../out/${path}`, import.meta.url), "utf8");
     assert.match(html, expected);
     assert.match(html, /H2SO4/);
     assert.doesNotMatch(html, /codex-preview|Your site is taking shape/);
@@ -45,8 +22,7 @@ for (const [pathname, expected] of pages) {
 }
 
 test("home page includes app, support, privacy, advertising, and X routes", async () => {
-  const response = await render("/");
-  const html = await response.text();
+  const html = await readFile(new URL("../out/index.html", import.meta.url), "utf8");
   for (const href of [
     "/apps/kumocalc",
     "/apps/furumane",
@@ -59,4 +35,14 @@ test("home page includes app, support, privacy, advertising, and X routes", asyn
     assert.match(html, new RegExp(href.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
   }
   assert.match(html, /App Store · Coming Soon/);
+});
+
+test("metadata files point to the production domain", async () => {
+  const [robots, sitemap] = await Promise.all([
+    readFile(new URL("../out/robots.txt", import.meta.url), "utf8"),
+    readFile(new URL("../out/sitemap.xml", import.meta.url), "utf8"),
+  ]);
+  assert.match(robots, /https:\/\/h2so4apps\.com\/sitemap\.xml/);
+  assert.match(sitemap, /https:\/\/h2so4apps\.com\/apps\/kumocalc/);
+  assert.match(sitemap, /https:\/\/h2so4apps\.com\/privacy\/furumane/);
 });
