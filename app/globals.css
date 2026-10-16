@@ -918,3 +918,39 @@ a {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* KumoCalc's release assets and download links. */
+.kumocalc-download {
+  max-width: 100%;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.kumocalc-screenshots {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
+  margin-bottom: 82px;
+}
+
+.kumocalc-screenshots img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 16px;
+}
+
+@media (max-width: 620px) {
+  .kumocalc-download {
+    width: 100%;
+  }
+
+  .kumocalc-screenshots {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+
+  .kumocalc-screenshots img {
+    max-width: 300px;
+  }
+}

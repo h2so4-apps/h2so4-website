@@ -12,11 +12,13 @@ const apps = [
     name: "雲電卓",
     englishName: "KumoCalc",
     description:
-      "日々の計算を、すばやく見やすく。シンプルな操作と、あとから追いやすい計算履歴を大切にした電卓アプリです。",
+      "計算結果を雲に残して、次の計算に使える。数を見ながら整理できる電卓アプリです。",
     href: "/apps/kumocalc",
     icon: "123",
     className: "app-icon app-icon-cloud",
-    platform: "iPhone向けに準備中",
+    platform: "App Storeで配信中",
+    storeUrl: "https://apps.apple.com/jp/app/id6821341925",
+    image: "/images/kumocalc/icon.webp",
   },
   {
     name: "ふるマネ",
@@ -69,15 +71,19 @@ export default function Home() {
           <div className="section-heading">
             <p className="eyebrow">Apps</p>
             <h2 id="apps-title">使う人の目線で、シンプルに。</h2>
-            <p>まずはiPhone向けの2つのアプリを準備しています。</p>
+            <p>公開中・開発中のアプリをご紹介します。</p>
           </div>
 
           <div className="app-grid">
             {apps.map((app) => (
               <article className="app-card" key={app.name}>
-                <div className={app.className} aria-hidden="true">
-                  {app.icon}
-                </div>
+                {app.image ? (
+                  <img className="app-icon" src={app.image} alt="雲電卓のアプリアイコン" width={92} height={92} />
+                ) : (
+                  <div className={app.className} aria-hidden="true">
+                    {app.icon}
+                  </div>
+                )}
                 <div className="app-card-copy">
                   <p className="app-status">{app.platform}</p>
                   <h3>{app.name}</h3>
@@ -87,9 +93,15 @@ export default function Home() {
                     <a className="text-link" href={app.href}>
                       詳しく見る <span aria-hidden="true">→</span>
                     </a>
-                    <span className="store-badge" aria-label="App Store 公開準備中">
-                      App Store · Coming Soon
-                    </span>
+                    {app.storeUrl ? (
+                      <a className="button button-primary kumocalc-download" href={app.storeUrl}>
+                        App Storeでダウンロード
+                      </a>
+                    ) : (
+                      <span className="store-badge" aria-label="App Store 公開準備中">
+                        App Store · Coming Soon
+                      </span>
+                    )}
                   </div>
                 </div>
               </article>
